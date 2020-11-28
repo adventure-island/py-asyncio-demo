@@ -12,13 +12,8 @@ import logging
 import functools
 
 FORMAT = "[%(asctime)s][%(funcName)10s()] %(levelname)s: %(message)s"
-logging.basicConfig(level=logging.DEBUG, format=FORMAT, datefmt='%Y-%m-%d %H:%M:%S')
+logging.basicConfig(level=logging.DEBUG, format=FORMAT, datefmt='%H:%M:%S')
 logger = logging.getLogger(__name__)
-
-
-def set_event(event):
-    logger.debug('setting event in callback')
-    event.set()
 
 
 async def coro1(event):
@@ -33,6 +28,10 @@ async def coro2(event):
     logger.debug('coro2 triggered')
 
 
+def set_event(event):
+    logger.debug('setting event in callback')
+    event.set()
+    
 async def main(loop):
     # Create a shared event
     event = asyncio.Event()

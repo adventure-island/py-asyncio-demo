@@ -1,9 +1,10 @@
 # coding=utf-8
 """Handling Background Operations as They Finish
 
-as_completed() is a generator that manages the execution of a list of coroutines 
-given to it and produces their results one at a time as they finish running. 
-As with wait(), order is not guaranteed by as_completed(), but it is not 
+`as_completed()` is a generator that manages the execution of a list of coroutines 
+given to it and produces their results one at a time as they finish running.
+ 
+As with `wait()`, order is not guaranteed by `as_completed()`, but it is not 
 necessary to wait for all of the background operations to complete before taking 
 other action.
 """
@@ -14,7 +15,7 @@ import random
 import logging
 
 FORMAT = "[%(asctime)s][%(funcName)10s()] %(levelname)s: %(message)s"
-logging.basicConfig(level=logging.DEBUG, format=FORMAT, datefmt='%Y-%m-%d %H:%M:%S')
+logging.basicConfig(level=logging.DEBUG, format=FORMAT, datefmt='%H:%M:%S')
 logger = logging.getLogger(__name__)
 
 
@@ -46,7 +47,7 @@ async def main(num_tasks: int, timeout=None):
     
     results = []
     for next_to_complete in asyncio.as_completed(tasks):
-        logger.debug(f'as_completed yielded a coroutine {next_to_complete}')
+        logger.debug(f'as_completed yielded a coroutine {type(next_to_complete)}')
         logger.debug('calling await...')
         answer = await next_to_complete
         

@@ -14,7 +14,7 @@ async def mycoro(task_id: int) -> str:
     logger.debug(f'Starting task {task_id}')
     
     try:
-        await asyncio.sleep(1)
+        await asyncio.sleep(task_id)
     except asyncio.CancelledError:
         logger.debug(f'Task {task_id} was canceled')
         raise
@@ -62,7 +62,9 @@ def run_demo_create_task():
     
     event_loop = asyncio.get_event_loop()
     try:
-        event_loop.run_until_complete(main(event_loop))
+        task = event_loop.create_task(mycoro(1))
+        event_loop.run_until_complete(task)
+#         event_loop.run_until_complete(main(event_loop))
     finally:
         logger.debug('Closing event loop')
         event_loop.close()
@@ -107,13 +109,14 @@ def run_demo_calling_coro():
     
     async def f2():
         logger.debug("start f2")
-        await asyncio.sleep(1)
+        await asyncio.sleep(3)
         logger.debug("stop f2")
         
     async def f1():
         logger.debug("start f1")
         # f2() will not be executed without `await`
         await f2()
+        logger.debug("f2 returned")
         logger.debug("stop f1")
         
     loop = asyncio.get_event_loop()
@@ -167,7 +170,7 @@ def run_demo_canceling_while_waiting():
 
     async def main(loop):
         logger.debug('creating task')
-        task = loop.create_task(mycoro(3))
+        task = loop.create_task(mycoro(7))
         
         logger.debug('scheduling canceler task')
         '''
@@ -182,20 +185,25 @@ def run_demo_canceling_while_waiting():
         except asyncio.CancelledError:
             logger.debug('main() also sees task as canceled')
     
-    
+    logger.debug('run_demo_canceling_while_waiting - start')
     event_loop = asyncio.get_event_loop()
     try:
+        logger.debug('run_until_complete - start')
         event_loop.run_until_complete(main(event_loop))
+        logger.debug('run_until_complete - end')
     finally:
+        logger.debug('closing event loop')
         event_loop.close()
+        
+    logger.debug('run_demo_canceling_while_waiting - end')
        
 if __name__ == '__main__': 
 #     run_demo_warning()
 #     run_demo_ensure_future()
 #     run_demo_create_task()
 #     run_demo_run_py37()
-    run_demo_gather()
+#     run_demo_gather()
 #     run_demo_calling_coro()
 #     run_demo_canceling()
-#     run_demo_canceling_while_waiting()
+    run_demo_canceling_while_waiting()
     
