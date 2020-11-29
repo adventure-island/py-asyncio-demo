@@ -68,7 +68,7 @@ async def main(loop, num_consumers):
     # will block until the consumers pull some items out.
     q = asyncio.Queue(maxsize=num_consumers)
 
-    # Scheduled the consumer tasks.
+    # Schedule the consumer tasks.
     consumers = [
         loop.create_task(consumer(i, q))
         for i in range(num_consumers)
