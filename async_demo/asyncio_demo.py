@@ -22,10 +22,6 @@ logging.basicConfig(level=logging.DEBUG, format=FORMAT)
 
 logger = logging.getLogger(__name__)
 
-
-
-
-
 def fib():
     
     a = 2
@@ -105,8 +101,8 @@ if __name__ == '__main__':
         monitor_future(search_task, 1.0), loop=loop
     )
     
-#     repetitive_task = asyncio.ensure_future(
-#         repetitive_message('hello repetitive_task !', 2.5), loop=loop)
+    repetitive_task = asyncio.ensure_future(
+        repetitive_message('hello repetitive_task !', 2.5), loop=loop)
 
     all_future = asyncio.gather(search_task, monitor_task)
     
