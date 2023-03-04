@@ -11,7 +11,7 @@ import asyncio
 import logging
 
 FORMAT = "[%(asctime)s][%(funcName)10s()] %(levelname)s: %(message)s"
-logging.basicConfig(level=logging.DEBUG, format=FORMAT, datefmt='%Y-%m-%d %H:%M:%S')
+logging.basicConfig(level=logging.DEBUG, format=FORMAT, datefmt='%H:%M:%S')
 logger = logging.getLogger(__name__)
 
 
@@ -29,6 +29,9 @@ async def manipulate_condition(condition):
     # pause to let consumers start
     await asyncio.sleep(2)
 
+    # Notify 1 consumer in the first the iteration
+    # then notify 2 consumer in the second iteration
+    # then notify all remaining awaiting consumers 
     for i in range(1, 3):
         async with condition:
             logger.debug('notifying {} consumers'.format(i))

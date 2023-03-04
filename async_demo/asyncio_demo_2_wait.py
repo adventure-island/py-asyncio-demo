@@ -1,7 +1,7 @@
 # coding=utf-8
 """Waiting for Multiple Coroutines
 
-In situations where the order of execution doesn�t matter, and where there may 
+In situations where the order of execution doesn't matter, and where there may 
 be an arbitrary number of operations, wait() can be used to pause one coroutine
 until the other background operations complete.
 
@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 
 async def mycoro(task_id: int) -> str:
-    logger.debug(f'Starting task {task_id}')
+    logger.debug(f'Starting task {task_id}, sleeping {task_id} seconds...')
     
     try:
         await asyncio.sleep(task_id)
@@ -40,12 +40,11 @@ async def main(num_tasks: int, timeout=None):
         for i in range(num_tasks)
     ]
     
-    logger.debug('waiting for tasks to complete')
     
     start = time.perf_counter()
     
     """
-    Internally, wait() uses a set to hold the Task instances it creates. This 
+    Internally, wait() uses a `set` to hold the Task instances it creates. This 
     results in them starting, and finishing, in an unpredictable order. The 
     return value from wait() is a tuple containing two sets holding the finished 
     and pending tasks.
@@ -53,6 +52,7 @@ async def main(num_tasks: int, timeout=None):
     There will only be pending operations left if wait() is used with a timeout 
     value.
     """
+    logger.debug('Calling wait() to wait for tasks to complete')
     completed, pending = await asyncio.wait(tasks, timeout=timeout)
     
     finish = time.perf_counter()
@@ -78,8 +78,8 @@ async def main(num_tasks: int, timeout=None):
 event_loop = asyncio.get_event_loop()
 try:
     logger.debug('calling run_until_complete')
-    event_loop.run_until_complete(main(5))
-#     event_loop.run_until_complete(main(5, timeout=2))
+#     event_loop.run_until_complete(main(5))
+    event_loop.run_until_complete(main(5, timeout=2))
     logger.debug('run_until_complete returned')
 finally:
     logger.debug('closing event_loop')

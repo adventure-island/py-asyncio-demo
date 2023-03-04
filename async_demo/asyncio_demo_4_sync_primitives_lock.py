@@ -15,13 +15,13 @@ import random
 import logging
 
 FORMAT = "[%(asctime)s][%(funcName)10s()] %(levelname)s: %(message)s"
-logging.basicConfig(level=logging.DEBUG, format=FORMAT, datefmt='%Y-%m-%d %H:%M:%S')
+logging.basicConfig(level=logging.DEBUG, format=FORMAT, datefmt='%H:%M:%S')
 logger = logging.getLogger(__name__)
 
 
 async def mycoro(task_id: int) -> str:
     
-    seconds = random.randint(1, 10)
+    seconds = random.randint(1, 7)
     logger.debug(f'Starting task {task_id}, will sleep for {seconds} seconds')
     
     try:
@@ -34,11 +34,6 @@ async def mycoro(task_id: int) -> str:
     return str(task_id)
 
 
-def unlock(lock):
-    logger.debug('callback releasing lock')
-    lock.release()
-
-
 async def coro1(lock):
     """Demonstrate using asynchronous context manager to interact with the lock.
     """
@@ -46,7 +41,7 @@ async def coro1(lock):
     logger.debug('coro1 waiting for the lock')
     async with lock:
         logger.debug('coro1 acquired lock')
-        seconds = random.randint(1, 10)
+        seconds = random.randint(1, 5)
         logger.debug(f'sleep for {seconds} seconds')
         await asyncio.sleep(seconds)
         
@@ -72,24 +67,33 @@ async def coro2(lock):
         lock.release()
 
 
+def unlock(lock):
+    logger.debug('callback releasing lock')
+    lock.release()
+    
 async def main(loop):
     # Create and acquire a shared lock.
     lock = asyncio.Lock()
+    
     logger.debug('acquiring the lock before starting coroutines')
     await lock.acquire()
     logger.debug('lock acquired: {}'.format(lock.locked()))
 
     # Schedule a callback to unlock the lock.
 #     loop.call_later(0.1, functools.partial(unlock, lock))
-    loop.call_later(0.1, unlock, lock)
+    # Hold the lock for 3 seconds then release it
+    loop.call_later(3, unlock, lock)
 
     # Run the coroutines that want to use the lock.
-    logger.debug('waiting for coroutines')
+    # `coro1` and `coro2` use different ways to handle the lock
+    logger.debug('Hold the lock for 3 seconds then release it')
     await asyncio.wait([coro1(lock), coro2(lock)]),
 
 
 event_loop = asyncio.get_event_loop()
 try:
+    logger.debug('Starting tasks')
     event_loop.run_until_complete(main(event_loop))
 finally:
+    logger.debug('Closing event loop')
     event_loop.close()    
