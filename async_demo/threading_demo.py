@@ -23,10 +23,10 @@ logging.basicConfig(level=logging.DEBUG, format=FORMAT)
 logger = logging.getLogger(__name__)
 
 
-def do_sth(seconds: float) -> None:
-    logger.info(f"Sleeping {seconds} second...")
+def do_sth(seconds: float, id) -> None:
+    logger.info(f"Thread ID: {id}, Sleeping {seconds} second...")
     time.sleep(seconds)
-    logger.info("Done sleeping...")
+    logger.info(f"Thread ID: {id}, Done sleeping...")
 
 
 if __name__ == '__main__':
@@ -46,8 +46,8 @@ if __name__ == '__main__':
 #     t2.join()
 
     ts = []
-    for _ in range(10):
-        t = threading.Thread(target=do_sth, args=[1.5])
+    for i in range(10):
+        t = threading.Thread(target=do_sth, args=[1.5, i])
         t.start()
         ts.append(t)
         
